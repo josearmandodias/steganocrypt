@@ -30,10 +30,11 @@ char* chiffrer_transposition(const char* message, const int* cle, int taille_cle
     int k = 0;
     for (int i = 0; i < nb_lignes; i++){
         for (int j = 0; j < n; j++){
-            if (k < nb_lignes){
+            if (k < taille_message){
                 grille[i][j] = message[k++];
+            } else {
+                grille[i][j] = ' ';
             }
-            grille[i][j] = ' ';
         }
     }
 
@@ -58,15 +59,25 @@ char* chiffrer_transposition(const char* message, const int* cle, int taille_cle
         cle_copie[min_idx] = 99999; // "marquer" comme déjà utilisé
     }
 
-    char* chiffre = malloc(taille_message * sizeof(char));
+    char* chiffre = malloc((taille_message + 1) * sizeof(char));
+    int position =  0;
     for (int i = 0; i < n; i++){
         for (int j = 0; j < nb_lignes; j++){
-            chiffre[i] = 
+            if (j * n + ordre[i] < taille_message) { // on fait en sorte de ne pas inclure les espaces du padding
+                chiffre[position++] = grille[j][ordre[i]];
+            }
         }
     }
+    chiffre[taille_message] = '\0'; // on ajoute \0 comme c'est un pointeur
 
-    // on retourne le resultat 
-
+    // on libere la mémoire et on retourne le résultat
+    free(cle_copie);
+    free(ordre);
+    for (int i = 0; i < nb_lignes; i++){
+        free(grille[i]);
+    };
+    free(grille);
+    return chiffre;
 }
 
 char* dechiffrer_transposition(const char* message, const int* cle, int taille_cle){
