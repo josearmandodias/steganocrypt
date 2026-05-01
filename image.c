@@ -50,6 +50,12 @@ sImagePPM* charger_ppm(const char* chemin)
     fscanf(fp, "%d\n", &img->max);
 
     img->pixels = malloc(img->hauteur * sizeof(sPixel*));
+    if (!img->pixels) 
+    {
+         fprintf(stderr, "Unable to allocate memory\n");
+         exit(1);
+    }
+    
     for (int i = 0; i < img->hauteur; i++) 
     {
         img->pixels[i] = malloc(img->largeur * sizeof(sPixel));
@@ -112,6 +118,11 @@ sImagePPM* rotation_90(const sImagePPM* img)
     copieimg->max = img->max;
 
     copieimg->pixels = malloc(copieimg->hauteur * sizeof(sPixel*));
+    if (!copieimg->pixels) 
+    {
+         fprintf(stderr, "Unable to allocate memory\n");
+         exit(1);
+    }
     for (int i = 0; i < copieimg->hauteur; i++) 
     {
         copieimg->pixels[i] = malloc(copieimg->largeur * sizeof(sPixel));
@@ -142,6 +153,12 @@ sImagePPM* symetrie_h(const sImagePPM* img)
     copieimg->max = img->max;
 
     copieimg->pixels = malloc(copieimg->hauteur * sizeof(sPixel*));
+    if (!copieimg->pixels) 
+    {
+         fprintf(stderr, "Unable to allocate memory\n");
+         exit(1);
+    }
+
     for (int i = 0; i < copieimg->hauteur; i++) 
     {
         copieimg->pixels[i] = malloc(copieimg->largeur * sizeof(sPixel));
@@ -173,6 +190,12 @@ sImagePPM* symetrie_v(const sImagePPM* img)
     copieimg->max = img->max;
 
     copieimg->pixels = malloc(copieimg->hauteur * sizeof(sPixel*));
+    if (!copieimg->pixels) 
+    {
+         fprintf(stderr, "Unable to allocate memory\n");
+         exit(1);
+    }
+
     for (int i = 0; i < copieimg->hauteur; i++) 
     {
         copieimg->pixels[i] = malloc(copieimg->largeur * sizeof(sPixel));
@@ -202,7 +225,13 @@ sImagePPM* redimensionner(const sImagePPM* img, int nouv_largeur, int nouv_haute
     copieimg->hauteur = nouv_hauteur;
     copieimg->max = img->max;
 
-    copieimg->pixels = malloc(copieimg->hauteur * sizeof(sPixel*));
+    copieimg->pixels = malloc(copieimg->hauteur * sizeof(sPixel*));\
+    if (!copieimg->pixels) 
+    {
+         fprintf(stderr, "Unable to allocate memory\n");
+         exit(1);
+    }
+    
     for (int i = 0; i < copieimg->hauteur; i++) 
     {
         copieimg->pixels[i] = malloc(copieimg->largeur * sizeof(sPixel));
