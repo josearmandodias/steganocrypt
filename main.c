@@ -9,4 +9,7 @@ int main(){
     char* r = chiffrer_transposition("CRYPTOGRAPHIE", cle, 4);
     printf("%s\n", r);
     free(r);
+    char* s = dechiffrer_transposition(chiffrer_transposition("CRYPTOGRAPHIE", cle, 4), cle, 4);
+    printf("%s\n", s);
+    free(s);
 }
