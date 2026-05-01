@@ -18,32 +18,83 @@ sImagePPM* charger_ppm(const char* chemin)
     sImagePPM *img;
     FILE *fp;
     fp = fopen(chemin, "rb");
-    if (!fp) {
+    if (!fp) 
+    {
         fprintf(stderr, "Unable to open file '%s'\n", chemin);
         exit(1);
     }
 
     //read image format
-    if (!fgets(buff, sizeof(buff), fp)) {
+    if (!fgets(buff, sizeof(buff), fp)) 
+    {
         perror(chemin);
         exit(1);
     }
 
     //check the image format
-    if (buff[0] != 'P' || buff[1] != '6') {
+    if (buff[0] != 'P' || buff[1] != '6')
+    {
          fprintf(stderr, "Invalid image format (must be 'P6')\n");
          exit(1);
     }
 
     img = (sImagePPM *)malloc(sizeof(sImagePPM));
-    if (!img) {
+    if (!img) 
+    {
          fprintf(stderr, "Unable to allocate memory\n");
          exit(1);
     }
 
-    return img;
+    fscanf(fp, "%d\n", &img->largeur);
+    fscanf(fp, "%d\n", &img->hauteur);
+    fscanf(fp, "%d\n", &img->max);
+
+    img->pixels = malloc(img->hauteur * sizeof(sPixel*));
+    for (int i = 0; i < img->hauteur; i++) 
+    {
+        img->pixels[i] = malloc(img->largeur * sizeof(sPixel));
+    }
+
+    for (int i = 0; i < img->hauteur; i++) 
+    {
+        for (int j = 0; j < img->largeur; j++) 
+        {
+            fscanf(&img->pixels[i][j], sizeof(sPixel), 1, fp);
+        }
+    }
+
+    fclose(fp);
+    return img;  
 }
 
+int sauvegarder_ppm(const sImagePPM* img, const char* chemin)
+{
+    FILE *fp = fopen(chemin, "wb");
+    if (!fp) {
+        fprintf(stderr, "Unable to open file '%s'\n", chemin);
+        return -1;
+    }
 
-int        sauvegarder_ppm(const sImagePPM*, const char*);   
-void       liberer_ppm(sImagePPM* img);
+    fprintf(fp, "P6\n");
+    fprintf(fp, "%d\n", img->largeur);
+    fprintf(fp, "%d\n", img->hauteur);
+    fprintf(fp, "%d\n", img->max);
+
+    for (int i = 0; i < img->hauteur; i++) {
+        for (int j = 0; j < img->largeur; j++) {
+            fwrite(&img->pixels[i][j], sizeof(sPixel), 1, fp);
+        }
+    }
+    fclose(fp);
+    return 0;
+}
+
+void liberer_ppm(sImagePPM* img)
+{
+    for (int i = 0; i < img->hauteur; i++) 
+    {
+        free(img->pixels[i]);
+    }
+    free(img->pixels);
+    free(img);
+}
