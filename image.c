@@ -2,16 +2,6 @@
 #include <stdlib.h>
 #include "image.h"
 
-typedef struct 
-{ 
-    unsigned char r, g, b; 
-} sPixel;
-
-typedef struct 
-{ 
-    int largeur, hauteur, max; sPixel** pixels; 
-} sImagePPM;
-
 sImagePPM* charger_ppm(const char* chemin)
 {
     char buff[16];
