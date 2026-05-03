@@ -94,6 +94,16 @@ void liberer_ppm(sImagePPM* img)
     free(img);
 }
 
+void liberer_pgm(sImagePGM* img)
+{
+    for (int i = 0; i < img->hauteur; i++)
+    {
+        free(img->pixels[i]);
+    }
+    free(img->pixels);
+    free(img);
+}
+
 sImagePPM* rotation_90(const sImagePPM* img)
 {
     sImagePPM* copieimg = malloc(sizeof(sImagePPM));
@@ -220,12 +230,7 @@ sImagePPM* redimensionner(const sImagePPM* img, int nouv_largeur, int nouv_haute
     copieimg->hauteur = nouv_hauteur;
     copieimg->max = img->max;
 
-    copieimg->pixels = malloc(copieimg->hauteur * sizeof(sPixel*));\
-    if (!copieimg->pixels) 
-    {
-         fprintf(stderr, "Unable to allocate memory\n");
-         exit(1);
-    }
+    copieimg->pixels = malloc(copieimg->hauteur * sizeof(sPixel*));
     if (!copieimg->pixels) 
     {
          fprintf(stderr, "Unable to allocate memory\n");
