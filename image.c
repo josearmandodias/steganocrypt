@@ -162,6 +162,11 @@ sImagePPM* symetrie_h(const sImagePPM* img)
     for (int i = 0; i < copieimg->hauteur; i++) 
     {
         copieimg->pixels[i] = malloc(copieimg->largeur * sizeof(sPixel));
+        if (!copieimg->pixels[i])
+        {
+            fprintf(stderr, "Unable to allocate memory\n");
+            exit(1);
+        }
     }
 
     for (int i = 0; i < img->hauteur; i++)
@@ -226,6 +231,11 @@ sImagePPM* redimensionner(const sImagePPM* img, int nouv_largeur, int nouv_haute
     copieimg->max = img->max;
 
     copieimg->pixels = malloc(copieimg->hauteur * sizeof(sPixel*));\
+    if (!copieimg->pixels) 
+    {
+         fprintf(stderr, "Unable to allocate memory\n");
+         exit(1);
+    }
     if (!copieimg->pixels) 
     {
          fprintf(stderr, "Unable to allocate memory\n");
