@@ -1,7 +1,3 @@
-//
-// Created by jjjose on 4/27/26.
-//
-
 #ifndef CRYPTO_H
 #define CRYPTO_H
 
