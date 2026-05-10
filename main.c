@@ -13,6 +13,214 @@ int g_cle[10];
 int g_taille_cle = 0;
 sImagePPM* g_img = NULL;
 
+void demander_si_vide(char* var, const char* question)
+{
+    if (strlen(var) == 0)
+    {
+        printf("%s", question);
+        // prendre en compte les espaces
+        fgets(var, 256, stdin);
+        // on enleve le \n pour eviter un retour a la ligne par un fin de chaine
+        var[strcspn(var, "\n")] = '\0';
+    }
+}
+
+void menu_cryptographie()
+{
+    // chiffrer un message
+    while (1) {
+        int choix;
+        printf("\n--- Cryptographie ---");
+        demander_si_vide(g_message, "Message : ");
+        printf("1. Chiffrer un message\n");
+        printf("2. Déchiffrer un message\n");
+        printf("3. Test automatique (chiffrer puis déchiffrer)\n");
+        printf("0. Retour\n");
+        printf("Votre choix : ");
+        scanf("%d", &choix);
+        if (choix == 1)
+        {
+            if (g_taille_cle == 0) {
+                printf("Taille de la clé : ");
+                scanf("%d", &g_taille_cle);
+                printf("Entrez la clé : ");
+                for (int i = 0; i < g_taille_cle; i++) {
+                    scanf("%d", &g_cle[i]);
+                }
+            }
+            char* chiffre = chiffrer_transposition(g_message, g_cle, g_taille_cle);
+            printf("Message chiffré : %s\n", chiffre);
+            free(chiffre);
+        } 
+        else if (choix == 2) 
+        {
+            if (g_taille_cle == 0) {
+                printf("Taille de la clé : ");
+                scanf("%d", &g_taille_cle);
+                printf("Entrez la clé : ");
+                for (int i = 0; i < g_taille_cle; i++) {
+                    scanf("%d", &g_cle[i]);
+                }
+            }
+            char* dechiffre = dechiffrer_transposition(g_message, g_cle, g_taille_cle);
+            printf("Message déchiffré : %s\n", dechiffre);
+            free(dechiffre);
+        }
+        else if (choix == 3) 
+        {
+            demander_si_vide(g_message, "Message : ");
+            if (g_taille_cle == 0) {
+                printf("Taille de la clé : ");
+                scanf("%d", &g_taille_cle);
+                printf("Entrez la clé : ");
+                for (int i = 0; i < g_taille_cle; i++) {
+                    scanf("%d", &g_cle[i]);
+                }
+            }
+            char* c = chiffrer_transposition(g_message, g_cle, g_taille_cle);
+            char* d = dechiffrer_transposition(c, g_cle, g_taille_cle);
+            if (strcmp(g_message, d) == 0)
+            {
+                printf("TEST OK\n");
+            }
+            else
+            {
+                printf("TEST ERREUR : '%s' != '%s'\n", g_message, d);
+            }
+            free(c); 
+            free(d);
+        }
+        else if (choix == 0) 
+        {
+            return;
+        }
+        else 
+        {
+            printf("Choix invalide.\n");
+        }
+    }
+}
+
+void menu_images()
+{
+    while (1) {
+        int choix;
+        printf("\n--- Images ---\n");
+        printf("1. Charger une image PPM et afficher ses infos\n");
+        printf("2. Sauvegarder l'image courante\n");
+        printf("0. Retour\n");
+        printf("Votre choix : ");
+        scanf("%d", &choix);
+        if (choix == 1)
+        {
+            demander_si_vide(g_source, "Fichier source : ");
+            if (g_img != NULL)
+            {
+                liberer_ppm(g_img);
+            }
+            g_img = charger_ppm(g_source);
+            printf("Image chargée : %d x %d, max = %d\n", g_img->largeur, g_img->hauteur, g_img->max);
+        }
+        else if (choix == 2)
+        {
+            if (g_img == NULL) {
+                printf("Aucune image chargée.\n");
+            } 
+            else 
+            {
+                demander_si_vide(g_sortie, "Fichier de sortie : ");
+                sauvegarder_ppm(g_img, g_sortie);
+                printf("Image sauvegardée.\n");
+            }
+        }
+        else if (choix == 0)
+        {
+            return;
+        } 
+        else 
+        {
+            printf("Choix invalide.\n");
+        }
+    }
+}
+
+void menu_steganographie()
+{
+    while (1) {
+        int choix;
+        printf("\n--- Stéganographie ---\n");
+        printf("1. Cacher un message dans l'image courante\n");
+        printf("2. Extraire le message de l'image courante\n");
+        printf("3. Test automatique (cacher puis extraire)\n");
+        printf("0. Retour\n");
+        printf("Votre choix : ");
+        scanf("%d", &choix);
+        if (choix == 1)
+        {
+            if (g_img == NULL)
+            { 
+                printf("Aucune image chargée.\n");
+            }
+            else
+            {
+                demander_si_vide(g_message, "Message : ");
+                if (cacher_message(g_img, g_message) == 0)
+                    printf("Message caché avec succès.\n");
+                else
+                    printf("Erreur : message trop long.\n");
+            }
+        }
+        else if (choix == 2)
+        {
+            if (g_img == NULL)
+            { 
+                printf("Aucune image chargée.\n");
+            }
+            else
+            {
+                char* extrait = extraire_message(g_img);
+                if (extrait == NULL)
+                    printf("Erreur : aucun message trouvé.\n");
+                else {
+                    printf("Message extrait : %s\n", extrait);
+                    free(extrait);
+                }
+            }
+        }
+        else if (choix == 3)
+        {
+            if (g_img == NULL) 
+            { 
+                printf("Aucune image chargée.\n");
+            }
+            else
+            {
+                demander_si_vide(g_message, "Message : ");
+                cacher_message(g_img, g_message);
+                char* extrait = extraire_message(g_img);
+                if (strcmp(g_message, extrait) == 0)
+                    printf("TEST OK\n");
+                else
+                    printf("TEST ERREUR : '%s' != '%s'\n", g_message, extrait);
+                free(extrait);
+            }
+        }
+        else if (choix == 0)
+        {
+             return;
+        }
+        else 
+        {
+            printf("Choix invalide.\n");
+        }
+    }
+}
+
+void menu_traitement()
+{
+    
+}
+
 void menu_principal(void) 
 {
     int choix;
