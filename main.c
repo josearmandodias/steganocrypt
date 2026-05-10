@@ -218,7 +218,95 @@ void menu_steganographie()
 
 void menu_traitement()
 {
-    
+    while (1) {
+        int choix;
+        printf("\n--- Traitement et compression ---\n");
+        printf("1. Rotation 90° (sens horaire)\n");
+        printf("2. Symétrie horizontale (gauche-droite)\n");
+        printf("3. Symétrie verticale (haut-bas)\n");
+        printf("4. Redimensionner\n");
+        printf("5. Convertir en niveaux de gris\n");
+        printf("6. Seuillage\n");
+        printf("0. Retour\n");
+        printf("Votre choix : ");
+        scanf("%d", &choix);
+        if (choix == 1)
+        {
+            if (g_img == NULL) { printf("Aucune image chargée.\n"); }
+            else
+            {
+                sImagePPM* res = rotation_90(g_img);
+                liberer_ppm(g_img);
+                g_img = res;
+                printf("Rotation effectuée.\n");
+            }
+        }
+        else if (choix == 2)
+        {
+            if (g_img == NULL) { printf("Aucune image chargée.\n"); }
+            else
+            {
+                sImagePPM* res = symetrie_h(g_img);
+                liberer_ppm(g_img);
+                g_img = res;
+                printf("Symétrie horizontale effectuée.\n");
+            }
+        }
+        else if (choix == 3)
+        {
+            if (g_img == NULL) { printf("Aucune image chargée.\n"); }
+            else
+            {
+                sImagePPM* res = symetrie_v(g_img);
+                liberer_ppm(g_img);
+                g_img = res;
+                printf("Symétrie verticale effectuée.\n");
+            }
+        }
+        else if (choix == 4)
+        {
+            if (g_img == NULL) { printf("Aucune image chargée.\n"); }
+            else
+            {
+                int nw, nh;
+                printf("Nouvelle largeur : ");
+                scanf("%d", &nw);
+                printf("Nouvelle hauteur : ");
+                scanf("%d", &nh);
+                sImagePPM* res = redimensionner(g_img, nw, nh);
+                liberer_ppm(g_img);
+                g_img = res;
+                printf("Redimensionnement effectué.\n");
+            }
+        }
+        else if (choix == 5)
+        {
+            if (g_img == NULL) { printf("Aucune image chargée.\n"); }
+            else
+            {
+                sImagePGM* gris = convertir_gris(g_img);
+                printf("Conversion en niveaux de gris effectuée.\n");
+                liberer_pgm(gris);
+            }
+        }
+        else if (choix == 6)
+        {
+            if (g_img == NULL) { printf("Aucune image chargée.\n"); }
+            else
+            {
+                int seuil;
+                printf("Seuil (0-255) : ");
+                scanf("%d", &seuil);
+                sImagePGM* gris = convertir_gris(g_img);
+                sImagePGM* res = seuiller(gris, seuil);
+                liberer_pgm(gris);
+                liberer_pgm(res);
+                printf("Seuillage effectué.\n");
+            }
+        }
+        else if (choix == 0) { return; }
+        else { printf("Choix invalide.\n"); }
+    }
 }
 
 void menu_principal(void) 
